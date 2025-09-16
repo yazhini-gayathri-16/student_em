@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Application theme (Colours) */
+:root {
+  --color-primary: #0A2C3C;
+  --color-secondary: #DDF2FF;
+  --color-accent: #cce4ff;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #31383F;
+  --color-background: #ffffff;
+  --color-button-primary: #215771;
+  --color-button-secondary: #0A2C3C;
+  --color-border: #215771;
+  --color-form: #f8fafc;
+}
+
+/* Master components color mappings */
+.text-primary { color: var(--color-text-secondary); }
+.text-secondary { color: var(--color-text-secondary); }
+.bg-primary { background-color: var(--color-primary); }
+.bg-secondary { background-color: var(--color-secondary); }
+.bg-button { background-color: var(--color-button-primary); }
+.bg-background { background-color: var(--color-background); }
+.bg-form { background-color: var(--color-form); }
+.border-secondary { border-color: var(--color-secondary); }
