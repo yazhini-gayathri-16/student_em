@@ -3,47 +3,47 @@ import { X } from 'lucide-react';
 
 const PreviewModal = ({ form, formData, eventTitle, onClose, onEdit, onSubmit, submitting }) => {
   const formatFieldValue = (field, value) => {
-    if (!value) return 'Not provided';
+    if (!value || value === '') return 'Not provided';
 
     switch (field.type) {
       case 'checkbox':
         return Array.isArray(value) ? value.join(', ') : value;
+      case 'radio':
+        return value;
+      case 'textarea':
+        return value;
       default:
         return value;
     }
   };
 
-  const getFieldLabel = (field) => {
-    switch (field.id) {
-      case 'registration_number':
-        return 'Registration number';
-      case 'year':
-        return 'Year';
-      case 'team_leader_email':
-        return 'Team lead Email ID';
-      case 'team_member_name':
-        return 'Team member Name';
-      case 'team_member_email':
-        return 'Team member mail ID';
-      case 'project_title':
-        return 'Project Title';
-      case 'abstract':
-        return 'Abstract';
-      default:
-        return field.label;
-    }
+  const getDisplayLabel = (field) => {
+    // Clean up labels to remove asterisks and formatting for display
+    const cleanLabel = field.label?.replace(/\*\s*$/, '').trim() || field.label;
+
+    // Common field mappings for display
+    const labelMappings = {
+      'registration_number': 'Registration number',
+      'year': 'Year',
+      'team_leader_email': 'Team lead Email ID',
+      'team_member_name': 'Team member Name',
+      'team_member_email': 'Team member mail ID',
+      'project_title': 'Project Title',
+      'abstract': 'Abstract'
+    };
+
+    return labelMappings[field.id] || cleanLabel;
   };
 
-  // Mock data for demonstration - replace with actual form data
-  const previewData = {
-    registration_number: formData.registration_number || '412578xyz',
-    team_leader_name: 'Varsha', // This could be derived from form or user profile
-    year: formData.year || '3rd year',
-    team_leader_email: formData.team_leader_email || 'varsha123@gmail.com',
-    team_member_name: formData.team_member_name || 'Anu',
-    team_member_email: formData.team_member_email || 'Anu123@gmail.com',
-    project_title: formData.project_title || 'AquaSentient',
-    abstract: formData.abstract || 'The Chennai metropolitan area is highly susceptible to severe urban flooding during the annual monsoon season, leading to significant disruption and potential danger. To address this critical issue, this project aims to design and develop "AquaSentient," an intelligent, real-time system for predicting and managing flood events. The system will'
+  // Derive team leader name from email if available
+  const getTeamLeaderName = () => {
+    const email = formData.team_leader_email || formData.team_leader_email;
+    if (email) {
+      // Extract name from email (everything before @)
+      const name = email.split('@')[0];
+      return name.charAt(0).toUpperCase() + name.slice(1);
+    }
+    return 'Not provided';
   };
 
   return (
@@ -66,55 +66,55 @@ const PreviewModal = ({ form, formData, eventTitle, onClose, onEdit, onSubmit, s
         {/* Modal Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
           <div className="bg-gray-50 rounded-lg p-4 space-y-4">
-            {/* Registration Number */}
-            <div className="flex">
-              <span className="font-semibold text-gray-700 min-w-[140px]">Registration number:</span>
-              <span className="text-gray-600">{previewData.registration_number}</span>
-            </div>
+            {/* Show Team Lead Name first if we can derive it */}
+            {formData.team_leader_email && (
+              <div className="flex">
+                <span className="font-semibold text-gray-700 min-w-[140px]">Team lead Name:</span>
+                <span className="text-gray-600">{getTeamLeaderName()}</span>
+              </div>
+            )}
 
-            {/* Team Lead Name */}
-            <div className="flex">
-              <span className="font-semibold text-gray-700 min-w-[140px]">Team lead Name:</span>
-              <span className="text-gray-600">{previewData.team_leader_name}</span>
-            </div>
+            {/* Dynamic form fields - show all filled data */}
+            {form?.fields?.map((field) => {
+              const value = formData[field.id];
+              const displayValue = formatFieldValue(field, value);
 
-            {/* Year */}
-            <div className="flex">
-              <span className="font-semibold text-gray-700 min-w-[140px]">Year:</span>
-              <span className="text-gray-600">{previewData.year}</span>
-            </div>
+              // Skip empty optional fields
+              if (!value && !field.required) {
+                return null;
+              }
 
-            {/* Team Lead Email */}
-            <div className="flex">
-              <span className="font-semibold text-gray-700 min-w-[140px]">Team lead Email ID:</span>
-              <span className="text-gray-600">{previewData.team_leader_email}</span>
-            </div>
+              return (
+                <div key={field.id} className={field.type === 'textarea' ? '' : 'flex'}>
+                  <span className="font-semibold text-gray-700 min-w-[140px]">
+                    {getDisplayLabel(field)}:
+                  </span>
+                  {field.type === 'textarea' ? (
+                    <p className="text-gray-600 mt-1 leading-relaxed">
+                      {displayValue}
+                    </p>
+                  ) : (
+                    <span className="text-gray-600">{displayValue}</span>
+                  )}
+                </div>
+              );
+            })}
 
-            {/* Team Member Name */}
-            <div className="flex">
-              <span className="font-semibold text-gray-700 min-w-[140px]">Team member Name:</span>
-              <span className="text-gray-600">{previewData.team_member_name}</span>
-            </div>
+            {/* Show message if no data is filled */}
+            {(!form?.fields || form.fields.length === 0) && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No form data available</p>
+              </div>
+            )}
 
-            {/* Team Member Email */}
-            <div className="flex">
-              <span className="font-semibold text-gray-700 min-w-[140px]">Team member mail ID:</span>
-              <span className="text-gray-600">{previewData.team_member_email}</span>
-            </div>
-
-            {/* Project Title */}
-            <div className="flex">
-              <span className="font-semibold text-gray-700 min-w-[140px]">Project Title:</span>
-              <span className="text-gray-600">{previewData.project_title}</span>
-            </div>
-
-            {/* Abstract */}
-            <div>
-              <span className="font-semibold text-gray-700">Abstract:</span>
-              <p className="text-gray-600 mt-1 leading-relaxed">
-                {previewData.abstract}
-              </p>
-            </div>
+            {/* Show message if all fields are empty */}
+            {form?.fields && form.fields.length > 0 &&
+             !form.fields.some(field => formData[field.id]) && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No answers provided yet</p>
+                <p className="text-gray-400 text-sm mt-1">Please fill out the form before previewing</p>
+              </div>
+            )}
           </div>
         </div>
 

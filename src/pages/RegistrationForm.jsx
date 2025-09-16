@@ -21,7 +21,7 @@ const RegistrationForm = ({ eventId, eventTitle, onBack }) => {
     try {
       setLoading(true);
       setError(null);
-      const formData = await registrationFormService.getRegistrationForm(eventId);
+      const formData = await registrationFormService.getRegistrationForm(eventId, eventTitle);
       setForm(formData);
 
       // Initialize form data with empty values
