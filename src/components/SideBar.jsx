@@ -3,7 +3,7 @@ import { Calendar, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 import SearchableDropdown from './SearchableDropdown.jsx';
 import { keywordService } from '../services/keywordService.js';
 
-const SideBar = ({ filters, onFilterChange }) => {
+const SideBar = ({ filters, onFilterChange, activeSection = 'dashboard', onNavigate }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [keywords, setKeywords] = useState([]);
   const [loadingKeywords, setLoadingKeywords] = useState(true);
@@ -39,15 +39,53 @@ const SideBar = ({ filters, onFilterChange }) => {
       </button>
 
       {/* Header */}
-      <div className="flex items-center p-4 mt-8 border-b border-gray-600">
+      {/* <div className="flex items-center p-4 mt-8 border-b border-gray-600">
         <Calendar className="h-5 w-5 text-[var(--color-text-primary)] flex-shrink-0" />
         {!isCollapsed && (
           <span className="ml-3 text-[var(--color-text-primary)] font-medium">Events</span>
         )}
-      </div>
+      </div> */}
 
-      {/* Filter section */}
+      {/* Navigation Items */}
       {!isCollapsed && (
+        <div className="p-4">
+          <nav className="space-y-2">
+            <div
+              onClick={() => onNavigate && onNavigate('dashboard')}
+              className={`flex items-center p-2 text-[var(--color-text-primary)] rounded-lg cursor-pointer transition-colors ${
+                activeSection === 'dashboard'
+                  ? 'bg-[var(--color-button-primary)]'
+                  : 'hover:bg-gray-600'
+              }`}
+            >
+              <span className="text-sm font-medium">Events</span>
+            </div>
+            <div
+              onClick={() => onNavigate && onNavigate('registered')}
+              className={`flex items-center p-2 text-[var(--color-text-primary)] rounded-lg cursor-pointer transition-colors ${
+                activeSection === 'registered'
+                  ? 'bg-[var(--color-button-primary)]'
+                  : 'hover:bg-gray-600'
+              }`}
+            >
+              <span className="text-sm">Registered events</span>
+            </div>
+            <div
+              onClick={() => onNavigate && onNavigate('view-results')}
+              className={`flex items-center p-2 text-[var(--color-text-primary)] rounded-lg cursor-pointer transition-colors ${
+                activeSection === 'view-results'
+                  ? 'bg-[var(--color-button-primary)]'
+                  : 'hover:bg-gray-600'
+              }`}
+            >
+              <span className="text-sm">View results</span>
+            </div>
+          </nav>
+        </div>
+      )}
+
+      {/* Filter section - only show on dashboard */}
+      {!isCollapsed && activeSection === 'dashboard' && filters && (
         <div className="p-4 space-y-4">
           <div className="flex items-center mb-4">
             <Filter className="h-4 w-4 text-[var(--color-text-primary)] mr-2" />

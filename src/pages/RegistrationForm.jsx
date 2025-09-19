@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import Header from '../components/Header.jsx';
+import SideBar from '../components/SideBar.jsx';
 import { registrationFormService } from '../services/registrationFormService.js';
 import { authService } from '../services/authService.js';
 import PreviewModal from '../components/PreviewModal.jsx';
 
-const RegistrationForm = ({ eventId, eventTitle, onBack }) => {
+const RegistrationForm = ({ eventId, eventTitle, eventDetails, onBack, onRegistrationComplete, onNavigate }) => {
   const [form, setForm] = useState(null);
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -60,8 +61,35 @@ const RegistrationForm = ({ eventId, eventTitle, onBack }) => {
       }
 
       await registrationFormService.submitRegistration(eventId, formData);
+
+      // Save registered event to localStorage
+      const registeredEvents = JSON.parse(localStorage.getItem('registeredEvents') || '[]');
+      const newRegistration = {
+        id: eventId,
+        title: eventTitle,
+        venue: eventDetails?.location || eventDetails?.venue || 'Not specified',
+        date: eventDetails?.date || 'Not specified',
+        time: eventDetails?.time || 'Not specified',
+        type: eventDetails?.type || 'Not specified',
+        teamSize: eventDetails?.teamSize || 'Not specified',
+        description: eventDetails?.description || eventTitle,
+        prerequisites: eventDetails?.prerequisites || [],
+        registeredAt: new Date().toISOString(),
+        formData: formData
+      };
+
+      // Check if already registered
+      if (!registeredEvents.some(event => event.id === eventId)) {
+        registeredEvents.push(newRegistration);
+        localStorage.setItem('registeredEvents', JSON.stringify(registeredEvents));
+      }
+
       alert('Registration submitted successfully!');
-      onBack();
+      if (onRegistrationComplete) {
+        onRegistrationComplete();
+      } else {
+        onBack();
+      }
     } catch (error) {
       console.error('Error submitting registration:', error);
       setError('Failed to submit registration. Please try again.');
@@ -200,22 +228,7 @@ const RegistrationForm = ({ eventId, eventTitle, onBack }) => {
       <Header onLogout={handleLogout} />
 
       <div className="flex">
-        {/* Registration Sidebar */}
-        <aside className="w-68 bg-[var(--color-primary)] border-r min-h-[88vh] m-5 rounded-lg shadow-lg border border-[var(--color-border)]">
-          <div className="p-4">
-            <nav className="space-y-2">
-              <div className="flex items-center p-2 text-[var(--color-text-primary)] bg-[var(--color-button-primary)] rounded-lg">
-                <span className="text-sm font-medium">Events</span>
-              </div>
-              <div className="flex items-center p-2 text-[var(--color-text-primary)] hover:bg-gray-600 rounded-lg cursor-pointer transition-colors">
-                <span className="text-sm">Registered events</span>
-              </div>
-              <div className="flex items-center p-2 text-[var(--color-text-primary)] hover:bg-gray-600 rounded-lg cursor-pointer transition-colors">
-                <span className="text-sm">View results</span>
-              </div>
-            </nav>
-          </div>
-        </aside>
+        <SideBar activeSection="dashboard" onNavigate={onNavigate} />
 
         <main className="flex-1 p-6">
           {/* Back Arrow */}

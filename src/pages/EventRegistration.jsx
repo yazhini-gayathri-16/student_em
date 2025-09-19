@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft } from 'lucide-react';
 import Header from '../components/Header.jsx';
+import SideBar from '../components/SideBar.jsx';
 import { eventService } from '../services/eventService.js';
 import { authService } from '../services/authService.js';
 
-const EventRegistration = ({ eventId, onBack, onNext }) => {
+const EventRegistration = ({ eventId, onBack, onNext, onNavigate }) => {
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
@@ -44,7 +45,7 @@ const EventRegistration = ({ eventId, onBack, onNext }) => {
 
   const handleNext = () => {
     if (onNext) {
-      onNext(eventId, event.title);
+      onNext(eventId, event.title, event);
     }
   };
 
@@ -120,22 +121,7 @@ const EventRegistration = ({ eventId, onBack, onNext }) => {
       <Header onLogout={handleLogout} />
 
       <div className="flex">
-        {/* Registration Sidebar */}
-        <aside className="w-68 bg-[var(--color-primary)] border-r min-h-[88vh] m-5 rounded-lg shadow-lg border border-[var(--color-border)]">
-          <div className="p-4">
-            <nav className="space-y-2">
-              <div className="flex items-center p-2 text-[var(--color-text-primary)] bg-[var(--color-button-primary)] rounded-lg">
-                <span className="text-sm font-medium">Events</span>
-              </div>
-              <div className="flex items-center p-2 text-[var(--color-text-primary)] hover:bg-gray-600 rounded-lg cursor-pointer transition-colors">
-                <span className="text-sm">Registered events</span>
-              </div>
-              <div className="flex items-center p-2 text-[var(--color-text-primary)] hover:bg-gray-600 rounded-lg cursor-pointer transition-colors">
-                <span className="text-sm">View results</span>
-              </div>
-            </nav>
-          </div>
-        </aside>
+        <SideBar activeSection="dashboard" onNavigate={onNavigate} />
 
         <main className="flex-1 p-6">
           {/* Back Arrow - Outside sidebar */}

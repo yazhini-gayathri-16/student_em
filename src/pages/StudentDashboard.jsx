@@ -6,7 +6,7 @@ import { eventService } from '../services/eventService.js';
 import { authService } from '../services/authService.js';
 import { sampleEvents } from '../data/sampleEvents.js';
 
-const StudentDashboard = ({ onRegister }) => {
+const StudentDashboard = ({ onRegister, onNavigate }) => {
   const [events, setEvents] = useState([]);
   const [filteredEvents, setFilteredEvents] = useState([]);
   const [filters, setFilters] = useState({
@@ -96,7 +96,7 @@ const StudentDashboard = ({ onRegister }) => {
       <div className="min-h-screen bg-gray-50">
         <Header onLogout={handleLogout} />
         <div className="flex">
-          <SideBar filters={filters} onFilterChange={handleFilterChange} />
+          <SideBar filters={filters} onFilterChange={handleFilterChange} activeSection="dashboard" onNavigate={onNavigate} />
           <main className="flex-1 p-6">
             <div className="flex justify-center items-center h-64">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--color-button-primary)]"></div>
@@ -116,6 +116,8 @@ const StudentDashboard = ({ onRegister }) => {
         <SideBar
           filters={filters}
           onFilterChange={handleFilterChange}
+          activeSection="dashboard"
+          onNavigate={onNavigate}
         />
 
         <main className="flex-1 p-6">
